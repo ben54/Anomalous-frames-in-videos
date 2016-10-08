@@ -3,9 +3,19 @@ import numpy as np
 class DataSet(object):
 	def __init__(self):
 		self._index_in_epoch = 0
+		self._index_valid = 0
 		self._epochs_completed = 0
 		self.train = np.load('train.npy')
 		self.train_labels = np.load('train_labels.npy')
+		# take random 80/20 train/valid split every time
+      		perm = np.arange(self.train.shape[0])
+      		np.random.shuffle(perm)
+      		self.train = self.train[perm]
+      		self.train_labels = self.train_labels[perm]
+		self.valid = self.train[(int)(0.8 * self.train.shape[0]):, :]
+		self.train = self.train[:(int)(0.8 * self.train.shape[0]), :]
+		self.valid_labels = self.train_labels[(int)(0.8 * self.train_labels.shape[0]):]
+		self.train_labels = self.train_labels[:(int)(0.8 * self.train_labels.shape[0])]
 		self._num_examples = self.train.shape[0]
 
 	def next_batch(self, batch_size):
@@ -25,3 +35,15 @@ class DataSet(object):
       			assert batch_size <= self._num_examples
     		end = self._index_in_epoch
     		return self.train[start:end], self.train_labels[start:end]
+	
+	def next_valid_batch(self, batch_size):
+		start = self._index_valid
+		self._index_valid += batch_size
+		end = self._index_valid
+		return self.valid[start:end], self.valid_labels[start:end]
+
+	def get_trainsize(self):
+		return self.train.shape[0]
+	
+	def get_validsize(self):
+		return self.valid.shape[0]

@@ -51,6 +51,10 @@ for imnum in range(0, len(labels)):
 		for i in labels[imnum]:
 			test_labels[(imnum - 24) * 200 + i] = 1
 
+# duplicate each member to acount for the mirroring that was done in create_datasets.py
+train_labels = [val for val in train_labels for _ in (0, 1)]
+test_labels = [val for val in test_labels for _ in (0, 1)]
+
 train_labels = np.asarray(train_labels).reshape((len(train_labels), 1))
 test_labels = np.asarray(test_labels).reshape((len(test_labels), 1))
 
