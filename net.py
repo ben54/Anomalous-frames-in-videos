@@ -1,9 +1,10 @@
 import tensorflow as tf
 
 NFEATS = 1
-L1 = 16
-L2 = 32
-L3 = 64
+L1 = 64
+L2 = 128
+L3 = 128
+L4 = 128
 KEEP_PROB = 0.5
 
 def weight_variable(shape):
@@ -46,19 +47,28 @@ class Network:
 		# pooling
 		self.h_pool2 = max_pool_2x2(self.h_conv2)
 
+		# third conv layer
+		self.W_conv3 = weight_variable([5, 5, L2, L3])
+		self.b_conv3 = bias_variable([L3])
+
+		self.h_conv3 = tf.nn.relu(conv2d(self.h_pool2, self.W_conv3) + self.b_conv3)
+		
+		# pooling
+		self.h_pool3 = max_pool_2x2(self.h_conv3)
+		
 		# fully connected relu layer
-		self.W_fc1 = weight_variable([40 * 60 * L2, L3])
+		self.W_fc1 = weight_variable([20 * 30 * L3, L4])
 		self.b_fc1 = bias_variable([L3])
 		
-		self.h_pool2_flat = tf.reshape(self.h_pool2, [-1, 40 * 60 * L2])
+		self.h_pool3_flat = tf.reshape(self.h_pool3, [-1, 20 * 30 * L3])
 		
-		self.h_fc1 = tf.nn.relu(tf.matmul(self.h_pool2_flat, self.W_fc1) + self.b_fc1)
+		self.h_fc1 = tf.nn.relu(tf.matmul(self.h_pool3_flat, self.W_fc1) + self.b_fc1)
 
 		# dropout
 		self.h_fc1_drop = tf.nn.dropout(self.h_fc1, self.keep_prob)
 
 		# softmax
-		self.W_fc2 = weight_variable([L3, 1])
+		self.W_fc2 = weight_variable([L4, 1])
 		self.b_fc2 = bias_variable([1])
 
 		self.y_conv = tf.nn.softmax(tf.matmul(self.h_fc1_drop, self.W_fc2) + self.b_fc2)
@@ -74,9 +84,8 @@ class Network:
 		# Avg of negative logloss
 		self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.y_ * tf.log(self.y_conv), reduction_indices = [1]))
 		self.train_step = tf.train.AdamOptimizer(alpha).minimize(self.cross_entropy)
-		
-		self.config = tf.ConfigProto(device_count = {'GPU': 0}) 
-		self.sess = tf.Session(config = self.config)
+	
+		self.sess = tf.Session()	
 		self.sess.run(tf.initialize_all_variables())
 
 	def getAccuracy(self, images, labels):

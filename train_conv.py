@@ -2,7 +2,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import tensorflow as tf
 import numpy as np
 
 import load_data as ld
@@ -10,7 +9,7 @@ from net import Network
 from plots import plotLC
 
 ALPHA = 1e-3
-BATCH_SIZE = 200
+BATCH_SIZE = 20
 NITER = 1200
 
 test = np.load('test.npy')
