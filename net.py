@@ -83,6 +83,7 @@ class Network:
 		
 		# list of trainable parameters
 		self.trainable = [self.W_conv1, self.b_conv1, self.W_conv2, self.b_conv2,
+				self.W_conv3, self.b_conv3,
 				self.W_fc1, self.b_fc1, self.W_fc2, self.b_fc2]
 
 		# count when prediction = actual
