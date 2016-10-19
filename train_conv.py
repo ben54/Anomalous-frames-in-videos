@@ -8,7 +8,7 @@ import load_data as ld
 from net import Network
 from plots import plotLC
 
-ALPHA = 1e-3
+ALPHA = 1e-2
 BATCH_SIZE = 20
 NITER = 12000
 
@@ -37,5 +37,5 @@ for i in range(NITER):
 		print("Training accuracy %g" % (train_accuracies[-1]))
 	n.step(batch[0], batch[1])
 
-plotLC(train_accuracies, range(1, (NITER / (int)(D.get_trainsize() / BATCH_SIZE)) + 1), "TrainingEpochs")
-plotLC(valid_accuracies, range(1, (NITER / (int)(D.get_trainsize() / BATCH_SIZE)) + 1), "ValidationEpochs")
+plotLC(train_accuracies, range(1, (int) (NITER / (D.get_trainsize() / BATCH_SIZE)) + 1), "TrainingEpochs")
+plotLC(valid_accuracies, range(1, (int) (NITER / (D.get_trainsize() / BATCH_SIZE)) + 1), "ValidationEpochs")
