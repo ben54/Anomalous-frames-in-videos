@@ -1,24 +1,32 @@
 import tensorflow as tf
 
+# number of feature maps at input and each of the layers in progression
 NFEATS = 1
 L1 = 64
 L2 = 128
 L3 = 128
 L4 = 128
+
+# w.r.t dropout, probability of retaining a node
 KEEP_PROB = 0.5
 
 def weight_variable(shape):
+	# create weight tensor (kernel) given 4-D shape of 
+	# kernel dim1, kernel dim2, fan_in and fan_out
 	initial = tf.truncated_normal(shape, stddev = 0.1)
 	return tf.Variable(initial)
 
 def bias_variable(shape):
+	# create bias variable given 1-D shape of fan_out
 	initial = tf.constant(0.1, shape = shape)
 	return tf.Variable(initial)
 
 def conv2d(x, W):
+	# convolve a weight tensor over an input image
 	return tf.nn.conv2d(x, W, strides = [1, 1, 1, 1], padding = 'SAME')
 
 def max_pool_2x2(x):
+	# perform 2x2 max pooling on a given tensor
 	return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
 
 class Network:
@@ -81,7 +89,7 @@ class Network:
 		self.correct_prediction = tf.equal(self.y_conv, self.y_)
 		self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))	
 	
-		# Avg of negative logloss
+		# avg of negative logloss
 		self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.y_ * tf.log(self.y_conv), reduction_indices = [1]))
 		self.train_step = tf.train.AdamOptimizer(alpha).minimize(self.cross_entropy)
 	
@@ -89,10 +97,15 @@ class Network:
 		self.sess.run(tf.initialize_all_variables())
 
 	def getAccuracy(self, images, labels):
+		# evaluate the accuracy for a given batch of pairs of images and labels
+		# with the current set of weights
 		return self.accuracy.eval(feed_dict = {self.x: images, self.y_: labels, self.keep_prob: 1.0}, session = self.sess)
 
 	def step(self, images, labels):
+		# perform a step of forward prop followed by backprop for the batch
+		# of pairs of images and labels given
 		self.train_step.run(feed_dict = {self.x: images, self.y_: labels, self.keep_prob: KEEP_PROB}, session = self.sess)
 
 	def setParams(self, params):
-   		 self.sess.run([tf.assign(v, x) for v, x in zip(self.trainable, params)])
+		# load the given weights into the neural network
+   		self.sess.run([tf.assign(v, x) for v, x in zip(self.trainable, params)])

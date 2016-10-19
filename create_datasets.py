@@ -19,6 +19,8 @@ for fdname in fldrs:
 			# add mirrored copy of image
 			imlist.append(np.fliplr(im))
 
+# 2/3rd 1/3rd split set of images available into 
+# train (contains training + validation actually) and test
 train = imlist[:24*200*2]
 test = imlist[24*200*2:]
 

@@ -12,10 +12,13 @@ ALPHA = 1e-2
 BATCH_SIZE = 20
 NITER = 12000
 
+# load test data
 test = np.load('test.npy')
 test_labels = np.load('test_labels.npy')
 
+# initialize network
 n = Network(ALPHA)
+# load training and validation datasets
 D = ld.DataSet()
 
 train_accuracies = []
@@ -23,6 +26,7 @@ batch_accuracies = []
 valid_batch_accuracies = []
 valid_accuracies = []
 
+# train the network
 for i in range(NITER):
 	batch = D.next_batch(BATCH_SIZE)
 	batch_accuracies.append(n.getAccuracy(batch[0], batch[1]))
@@ -37,5 +41,6 @@ for i in range(NITER):
 		print("Training accuracy %g" % (train_accuracies[-1]))
 	n.step(batch[0], batch[1])
 
+# plot learning curves
 plotLC(train_accuracies, range(1, (int) (NITER / (D.get_trainsize() / BATCH_SIZE)) + 1), "TrainingEpochs")
 plotLC(valid_accuracies, range(1, (int) (NITER / (D.get_trainsize() / BATCH_SIZE)) + 1), "ValidationEpochs")

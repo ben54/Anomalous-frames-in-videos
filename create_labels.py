@@ -39,7 +39,7 @@ labels.append([])
 labels.append([])
 labels.append(range(14,106))
 
-# 2/3rd 1/3rd split
+# 2/3rd 1/3rd split into train (actually training + validation) and test
 train_labels = [0] * 24 * 200
 test_labels = [0] * 12 * 200
 
