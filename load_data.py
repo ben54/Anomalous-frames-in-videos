@@ -1,5 +1,11 @@
 import numpy as np
 
+def one_hot(labels):
+	# one-hot encode labels
+	oh = np.zeros((labels.shape[0], 2))
+	oh[np.arange(labels.shape[0]), labels.astype(int)] = 1
+	return oh
+
 class DataSet(object):
 	def __init__(self):
 		self._index_in_epoch = 0
@@ -16,6 +22,9 @@ class DataSet(object):
 		self.train = self.train[:(int)(0.8 * self.train.shape[0]), :]
 		self.valid_labels = self.train_labels[(int)(0.8 * self.train_labels.shape[0]):]
 		self.train_labels = self.train_labels[:(int)(0.8 * self.train_labels.shape[0])]
+		# one-hot encode the labels
+		self.train_labels = one_hot(self.train_labels)
+		self.valid_labels = one_hot(self.valid_labels)
 		self._num_examples = self.train.shape[0]
 
 	def next_batch(self, batch_size):

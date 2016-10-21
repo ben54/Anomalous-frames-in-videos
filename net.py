@@ -6,6 +6,9 @@ L1 = 64
 L2 = 128
 L3 = 128
 L4 = 128
+NLABELS = 2
+IMG_WIDTH = 158
+IMG_HEIGHT = 238
 
 # w.r.t dropout, probability of retaining a node
 KEEP_PROB = 0.5
@@ -31,11 +34,11 @@ def max_pool_2x2(x):
 
 class Network:
 	def __init__(self, alpha):
-		self.x = tf.placeholder(tf.float32, [None, 37604])
-		self.y_ = tf.placeholder(tf.float32, [None, 1])
+		self.x = tf.placeholder(tf.float32, [None, IMG_WIDTH * IMG_HEIGHT])
+		self.y_ = tf.placeholder(tf.float32, [None, NLABELS])
 		self.keep_prob = tf.placeholder(tf.float32)
     
-		self.x_image = tf.reshape(self.x, [-1, 158, 238, 1])
+		self.x_image = tf.reshape(self.x, [-1, IMG_WIDTH, IMG_HEIGHT, 1])
 
 		# first conv layer
 		self.W_conv1 = weight_variable([5, 5, NFEATS, L1])
@@ -76,8 +79,8 @@ class Network:
 		self.h_fc1_drop = tf.nn.dropout(self.h_fc1, self.keep_prob)
 
 		# softmax
-		self.W_fc2 = weight_variable([L4, 1])
-		self.b_fc2 = bias_variable([1])
+		self.W_fc2 = weight_variable([L4, NLABELS])
+		self.b_fc2 = bias_variable([NLABELS])
 
 		self.y_conv = tf.nn.softmax(tf.matmul(self.h_fc1_drop, self.W_fc2) + self.b_fc2)
 		
@@ -87,7 +90,7 @@ class Network:
 				self.W_fc1, self.b_fc1, self.W_fc2, self.b_fc2]
 
 		# count when prediction = actual
-		self.correct_prediction = tf.equal(self.y_conv, self.y_)
+		self.correct_prediction = tf.equal(tf.argmax(self.y_conv, 1), tf.argmax(self.y_, 1))
 		self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))	
 	
 		# avg of negative logloss

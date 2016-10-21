@@ -14,7 +14,7 @@ NITER = 12000
 
 # load test data
 test = np.load('test.npy')
-test_labels = np.load('test_labels.npy')
+test_labels = ld.one_hot(np.load('test_labels.npy'))
 
 # initialize network
 n = Network(ALPHA)
